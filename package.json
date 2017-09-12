@@ -1,6 +1,6 @@
 {
 	"name": "most-pmap",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Parallel, concurrency limited map for streams with a promise returning function",
 	"main": "most-pmap.js",
 	"scripts": {
@@ -17,7 +17,9 @@
 	"license": "MIT",
 	"dependencies": {
 		"@most/create": "^2.0.1",
-		"most": "^1.7.0"
+		"most": "^1.7.0",
+		"most-promise-map": "^1.0.0",
+		"most-proxy": "^3.3.0"
 	},
 	"devDependencies": {
 		"left-pad": "^1.1.3"
