@@ -15,7 +15,7 @@ function delay( ms){
 	})
 }
 
-var delays= most.from([100, 100, 1500, 3000, 300, 100, 100, 100, 800, 2000, 1000, 200])
-var mapped= mostPmap(delay, delays, 2)
+var delays= most.from([2000, 2000, 500, 500, 1000, 5000, 5000, 1000, 4000])
+var mapped= mostPmap(delay, delays, 3)
 
 mapped.forEach(x=> console.log( leftPad( x, 5, 0), new Date().toISOString()))

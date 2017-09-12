@@ -1,21 +1,53 @@
 "use strict"
-var most= require("most")
-var create= require("@most/create").create
+var most= require( "most")
+var create= require( "@most/create").create
+var pmap= require( "most-promise-map")
 
-function noop(){}
+function noop(){console.log("noop")}
 
 function mostPMap(fn, stream, parallel){
 	parallel= parallel|| 1
-	var initial= stream.take( parallel).map( fn).awaitPromises()
-	var skip= stream.skip( parallel)
-	var more= create(function( add, end){
-		var more= skip.zip( function( element){
-			return fn( element)
-		// create is lazy so output is now initialized
-		}, output).awaitPromises().forEach( add).then(end)
+
+	var _add= noop, _end
+	var output= create(function( add, end){
+		if( _end){
+			end( _end)
+			return
+		}
+		_add= add
+		_end= end
 	})
-	//var output= initial.join( more)
-	var output= most.join(most.from([initial, more]))
+
+	var capacity= new Array(parallel)
+	for( var i= 0; i< parallel.length; ++i){
+		capacity.push(0)
+	}
+	var gate= most.from( capacity).concat( output)
+
+	stream
+	.zip(x=> x, gate)
+	// map is just here--
+	.map(function(x){
+		return Promise
+			.resolve( x)
+			.then(function(x){
+				return fn( x)
+			})
+			.then( _add)
+			.catch(function(){})
+	})
+	// --to be waited on--
+	.awaitPromises()
+	.drain()
+	// --so we know when all processing is really done & can close
+	.then(function(){
+		if( _end){
+			_end()
+		}else{
+			_end= true
+		}
+	})
+
 	return output
 }
 
