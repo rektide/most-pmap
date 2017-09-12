@@ -1,12 +1,22 @@
 "use strict"
 var most= require("most")
+var create= require("@most/create").create
 
-function mostPMap(input, fn, parallel){
+function noop(){}
+
+function mostPMap(fn, stream, parallel){
 	parallel= parallel|| 1
-	var initial= input.take( parallel).map( fn).awaitPromises()
-	var more= input.skip( parallel).zip( function(input){
-		return fn( input)
-	}, output)).awaitPromises()
-	var output= initial.join(more)
+	var initial= stream.take( parallel).map( fn).awaitPromises()
+	var skip= stream.skip( parallel)
+	var more= create(function( add, end){
+		var more= skip.zip( function( element){
+			return fn( element)
+		// create is lazy so output is now initialized
+		}, output).awaitPromises().forEach( add).then(end)
+	})
+	//var output= initial.join( more)
+	var output= most.join(most.from([initial, more]))
 	return output
 }
+
+module.exports= mostPMap
