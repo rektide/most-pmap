@@ -1,0 +1,15 @@
+{
+	"name": "most-pmap",
+	"version": "1.0.0",
+	"description": "Parallel, concurrency limited map for streams with a promise returning function",
+	"main": "most-pmap.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": ["mostjs", "most.js", "streams", "map", "parallel-map"],
+	"author": "rektide de la faye",
+	"license": "MIT",
+	"dependencies": {
+		"most": "^1.7.0"
+	}
+}
